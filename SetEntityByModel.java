@@ -54,6 +54,59 @@ public  class SetEntityByModel<V, T> {
 		
 	}
 	
+	public T setSelecetedFields(V v, Class<T> c, String...selectedFields )  throws Exception{
+		
+		T t =c.newInstance();
+		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(selectedFields));
+		Field[]fields =   v.getClass().getDeclaredFields();
+		for(Field field: fields){
+			try{
+				boolean b = arrayList.contains(field.getName());
+				
+				if(b){
+				
+				String s1 = field.getName().substring(0, 1).toUpperCase();
+			    String nameCapitalized = s1 + field.getName().substring(1);
+			    
+			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
+			    
+			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
+			    m.invoke(t, method.invoke(v, null));
+				}
+			}catch(Exception e){
+				
+			}
+		}
+		
+		return t;
+	}
+	
+	public T setExceptSelectedFields(V v, Class<T> c, String...selectedFields )  throws Exception{
+		
+		T t =c.newInstance();
+		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(selectedFields));
+		Field[]fields =   v.getClass().getDeclaredFields();
+		for(Field field: fields){
+			try{
+				boolean b = arrayList.contains(field.getName());
+				
+				if(!b){
+				
+				String s1 = field.getName().substring(0, 1).toUpperCase();
+			    String nameCapitalized = s1 + field.getName().substring(1);
+			    
+			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
+			    
+			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
+			    m.invoke(t, method.invoke(v, null));
+				}
+			}catch(Exception e){
+				
+			}
+		}
+		
+		return t;
+	}
 	
 	
 }
