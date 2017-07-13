@@ -53,7 +53,9 @@ public  class SetEntityByModel<V, T> {
 		return t;
 		
 	}
-	
+	/**
+		Ignore all null values.
+	*/
 	public T setFields(V v, T t) throws Exception{
 		
 		//T t =c.newInstance();
@@ -67,7 +69,11 @@ public  class SetEntityByModel<V, T> {
 			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
 			    
 			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
-			    m.invoke(t, method.invoke(v, null));
+			    Object b = method.invoke(v, null);
+			    if(b!=null){
+			    	m.invoke(t, b);
+			    }
+			    
 			}catch(Exception e){
 				
 			}
