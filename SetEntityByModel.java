@@ -92,7 +92,7 @@ public class SetEntityByModel{
 		return t;
 	}
 	
-	public static <T,V> T setSelecetedFields(V fromEntity, T toEntty, String...selectedFields )  throws Exception{
+	public static <V,T> T setSelecetedFields(V fromEntity, T toEntty, String...selectedFields )  throws Exception{
 		
 		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(selectedFields));
 		Field[]fields =   fromEntity.getClass().getDeclaredFields();
