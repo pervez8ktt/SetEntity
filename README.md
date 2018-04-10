@@ -1,6 +1,6 @@
 # SetEntity
 
-    SetEntityByModel<FromClass,ToClass> model = new SetEntityByModel<FromClass,ToClass>();
+    
 		
 		FromClass fromClass = new FromClass();
 		
@@ -8,7 +8,11 @@
 		fromClass.setName("Pervez");
 		fromClass.setDob(new Date());
 		
-		ToClass toClass = model.setFields(fromClass, ToClass.class);
+		
+		
+		ToClass toClass = SetEntityByModel.setFields(fromClass, ToClass.class);
+		
+		
 		System.out.println(toClass.getId());
 		System.out.println(toClass.getName());
 		System.out.println(toClass.getDob());
