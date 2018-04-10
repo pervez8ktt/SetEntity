@@ -3,37 +3,19 @@ package com.pervez.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-
-public  class SetEntityByModel<V, T> {
+public class SetEntityByModel{
 	
-	public static void main(String args[]) throws Exception{
-		
-		
-		
-		SetEntityByModel<FromClass,ToClass> model = new SetEntityByModel<FromClass,ToClass>();
-		
-		FromClass fromClass = new FromClass();
-		
-		fromClass.setId(1);
-		fromClass.setName("Pervez");
-		fromClass.setDob(new Date());
-		
-		ToClass toClass = model.setFields(fromClass, ToClass.class);
-		System.out.println(toClass.getId());
-		System.out.println(toClass.getName());
-		System.out.println(toClass.getDob());
-		
-	}
 	
 
 	
-	public T setFields(V v, Class<T> c) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
+	public static <V, T> T setFields(V fromEntity, Class<T> toEntity) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException{
 	
-		T t =c.newInstance();
+		T t =toEntity.newInstance();
 		
-		Field[]fields =   v.getClass().getDeclaredFields();
+		Field[]fields =   fromEntity.getClass().getDeclaredFields();
 		for(Field field: fields){
 			try{
 				String s1 = field.getName().substring(0, 1).toUpperCase();
@@ -42,9 +24,9 @@ public  class SetEntityByModel<V, T> {
 			    
 			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
 			    
-			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
-			    System.out.println(method.invoke(v, null));
-				m.invoke(t, method.invoke(v, null));
+			    Method method = fromEntity.getClass().getMethod("get"+nameCapitalized, null);
+			    System.out.println(method.invoke(fromEntity, null));
+				m.invoke(t, method.invoke(fromEntity, null));
 			}catch(Exception e){
 				
 			}
@@ -56,22 +38,22 @@ public  class SetEntityByModel<V, T> {
 	/**
 		Ignore all null values.
 	*/
-	public T setFields(V v, T t) throws Exception{
+	public static <V,T> T setFields(V fromEntity, T toEntity) throws Exception{
 		
 		//T t =c.newInstance();
 		
-		Field[]fields =   v.getClass().getDeclaredFields();
+		Field[]fields =   fromEntity.getClass().getDeclaredFields();
 		for(Field field: fields){
 			try{
 				String s1 = field.getName().substring(0, 1).toUpperCase();
 			    String nameCapitalized = s1 + field.getName().substring(1);
 			    
-			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
+			    Method m = toEntity.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
 			    
-			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
-			    Object b = method.invoke(v, null);
+			    Method method = fromEntity.getClass().getMethod("get"+nameCapitalized, null);
+			    Object b = method.invoke(fromEntity, null);
 			    if(b!=null){
-			    	m.invoke(t, b);
+			    	m.invoke(toEntity, b);
 			    }
 			    
 			}catch(Exception e){
@@ -79,15 +61,15 @@ public  class SetEntityByModel<V, T> {
 			}
 		}
 		
-		return t;
+		return toEntity;
 		
 	}
 	
-	public T setSelecetedFields(V v, Class<T> c, String...selectedFields )  throws Exception{
+	public static <V,T> T setSelecetedFields(V fromEntity, Class<T> toEntity, String...selectedFields )  throws Exception{
 		
-		T t =c.newInstance();
+		T t =toEntity.newInstance();
 		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(selectedFields));
-		Field[]fields =   v.getClass().getDeclaredFields();
+		Field[]fields =   fromEntity.getClass().getDeclaredFields();
 		for(Field field: fields){
 			try{
 				boolean b = arrayList.contains(field.getName());
@@ -99,8 +81,8 @@ public  class SetEntityByModel<V, T> {
 			    
 			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
 			    
-			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
-			    m.invoke(t, method.invoke(v, null));
+			    Method method = fromEntity.getClass().getMethod("get"+nameCapitalized, null);
+			    m.invoke(t, method.invoke(fromEntity, null));
 				}
 			}catch(Exception e){
 				
@@ -110,11 +92,37 @@ public  class SetEntityByModel<V, T> {
 		return t;
 	}
 	
-	public T setExceptSelectedFields(V v, Class<T> c, String...selectedFields )  throws Exception{
+	public static <T,V> T setSelecetedFields(V fromEntity, T toEntty, String...selectedFields )  throws Exception{
 		
-		T t =c.newInstance();
 		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(selectedFields));
-		Field[]fields =   v.getClass().getDeclaredFields();
+		Field[]fields =   fromEntity.getClass().getDeclaredFields();
+		for(Field field: fields){
+			try{
+				boolean b = arrayList.contains(field.getName());
+				
+				if(b){
+				
+				String s1 = field.getName().substring(0, 1).toUpperCase();
+			    String nameCapitalized = s1 + field.getName().substring(1);
+			    
+			    Method m = toEntty.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
+			    
+			    Method method = fromEntity.getClass().getMethod("get"+nameCapitalized, null);
+			    m.invoke(toEntty, method.invoke(fromEntity, null));
+				}
+			}catch(Exception e){
+				
+			}
+		}
+		
+		return toEntty;
+	}
+	
+	public static <V,T> T setFieldsWithoutIgnoredFields(V fromEntity, Class<T> toEntity, String...ingnoredFields )  throws Exception{
+		
+		T t =toEntity.newInstance();
+		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(ingnoredFields));
+		Field[]fields =   fromEntity.getClass().getDeclaredFields();
 		for(Field field: fields){
 			try{
 				boolean b = arrayList.contains(field.getName());
@@ -126,8 +134,8 @@ public  class SetEntityByModel<V, T> {
 			    
 			    Method m = t.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
 			    
-			    Method method = v.getClass().getMethod("get"+nameCapitalized, null);
-			    m.invoke(t, method.invoke(v, null));
+			    Method method = fromEntity.getClass().getMethod("get"+nameCapitalized, null);
+			    m.invoke(t, method.invoke(fromEntity, null));
 				}
 			}catch(Exception e){
 				
@@ -135,6 +143,34 @@ public  class SetEntityByModel<V, T> {
 		}
 		
 		return t;
+	}
+	
+	
+	public static <V,T> T setFieldsWithoutIgnoredFields(V fromEntity, T toEntity, String...ingnoredFields )  throws Exception{
+		
+		
+		ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(ingnoredFields));
+		Field[]fields =   fromEntity.getClass().getDeclaredFields();
+		for(Field field: fields){
+			try{
+				boolean b = arrayList.contains(field.getName());
+				
+				if(!b){
+				
+				String s1 = field.getName().substring(0, 1).toUpperCase();
+			    String nameCapitalized = s1 + field.getName().substring(1);
+			    
+			    Method m = toEntity.getClass().getDeclaredMethod("set"+nameCapitalized,field.getType());
+			    
+			    Method method = fromEntity.getClass().getMethod("get"+nameCapitalized, null);
+			    m.invoke(toEntity, method.invoke(fromEntity, null));
+				}
+			}catch(Exception e){
+				
+			}
+		}
+		
+		return toEntity;
 	}
 	
 	
